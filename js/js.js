@@ -7,8 +7,37 @@ $(document).ready(function () {
     let data = result;
     $(data).each(function (index, item) {
       // console.log(item)
-      $("#shoplist").append(`
-            <div class="col mb-4 shop-col" data-category="${item.category}">
+      var price=item.price;
+     
+      var oldprice=Number(price+40.90)
+          if((index%2)==0)
+          {
+            $("#shoplist").append(`
+            <div class="col mb-4 shop-col" data-category="${item.category}" data-id="${item.id}">
+            <div class="card ">
+            <span class="stock">${item.rating.count}</span>
+              <img src="${item.image}" class="card-img-top" alt="${item.title}">
+              <div class="card-body">
+                <h5 class="card-title">${item.title}</h5>
+                <small class="pre-cost">${oldprice}$</small>
+                <h3 class="card-text price">${item.price}$</h3>
+               
+              </div>
+              <div class="card-footer d-flex align-items-center justify-content-end">
+              
+              <div>
+              <button class="view_button" data-target="#product_view" data-toggle="modal" data-id="${item.id}"> <i class="fa-solid fa-eye"></i></button>
+              <button ><i class="fa-solid fa-basket-shopping"></i></button>
+              </div>
+              </div>
+            </div>
+          </div>`)
+            
+             
+          }
+          else{
+            $("#shoplist").append(`
+            <div class="col mb-4 shop-col" data-category="${item.category}" data-id="${item.id}">
             <div class="card ">
             <span class="stock">${item.rating.count}</span>
               <img src="${item.image}" class="card-img-top" alt="${item.title}">
@@ -26,7 +55,10 @@ $(document).ready(function () {
               </div>
             </div>
           </div>`)
+          }
+         
     })
+   
     $(".view_button").click(function(){
       var id=$(this).data("id");
       // var url=""+id;
