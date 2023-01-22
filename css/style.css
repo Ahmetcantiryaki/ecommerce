@@ -194,3 +194,4 @@ input[type=number] {
     font-weight: bold;
     margin-top: 115px;
 }
+.btn-outline-danger:focus{box-shadow:none !important;}

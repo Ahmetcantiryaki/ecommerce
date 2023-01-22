@@ -1,21 +1,35 @@
 
-if(localStorage.getItem("products") == null)
-{
+let test = [];
+if (localStorage.getItem("products") == null) {
   $(".product-list").append("<span class='card-null'>Sepetiniz Boş</span>")
+
 }
-else{
-  var a=JSON.parse(localStorage.getItem("products"))
+else {
+  var a = JSON.parse(localStorage.getItem("products"))
   showdata(a)
   $(".badge-primary").text(a.length)
+  test.push(a)
+  // console.log(test)
 }
-function showdata (parameters) {
+function pricetotal()
+{
+ let a= JSON.parse(localStorage.getItem("products"))
+ $(a[0]).each(function(index,item) {
+  console.log(item)
+})
+}
+
+var prices=0;
+
+function showdata(parameters) {
 
   $(".product-list *").remove();
-  $(parameters).each(function(index,item){
+  $(parameters).each(function (index, item) {
     $.ajax({
-      url: "https://fakestoreapi.com/products/"+item
-    }).then(function(response){
+      url: "https://fakestoreapi.com/products/" + item
+    }).then(function (response) {
       // console.log(response)
+      
       $(".product-list").append(`
       <div class="pl-row">
         <div class="pl-img">
@@ -35,60 +49,62 @@ function showdata (parameters) {
                     <button class="btn btn-outline-primary quantity-minus">
                         <i class="fas fa-minus"></i>
                     </button>
-                    <input type="number" class="form-control w-25 mx-2 quantity" unitprice="10.99" value="1" min="1" readonly data-id="${response.id}">
+                    <input type="number" class="form-control w-25 mx-2 quantity"  value="1" min="1" readonly data-id="${response.id}">
                     <button class="btn btn-outline-primary quantity-plus">
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <span class="price">${response.price}$ </span>
+                <span class="price" data-price="${response.price}">${response.price}$</span>
             </div>
         </div>
     </div>
       `)
     })
   })
+  console.log(prices)
 }
-function addtocard(id) {
-  
- var new_data=id;
- if(localStorage.getItem("products")==null){
-  localStorage.setItem("products",'[]');
 
- }
- var old_data=JSON.parse(localStorage.getItem('products'));
- 
- if(!old_data.includes(id))
- {
-  old_data.push(new_data);
- opencard();
- }
- else{
-      Swal.fire({
+function addtocard(id) {
+
+  var new_data = id;
+  if (localStorage.getItem("products") == null) {
+    localStorage.setItem("products", '[]');
+
+  }
+  var old_data = JSON.parse(localStorage.getItem('products'));
+
+  if (!old_data.includes(id)) {
+    old_data.push(new_data);
+    opencard();
+  }
+  else {
+    Swal.fire({
       icon: 'error',
       title: 'Opps!',
       html:
-    'Bu ürün zaten sepete ekli,<br/> ' +
-    'Ürün adedini sepet içinde güncelleyebilirsin <br/>' +
-    'İyi alışverişler',
+        'Bu ürün zaten sepete ekli,<br/> ' +
+        'Ürün adedini sepet içinde güncelleyebilirsin <br/>' +
+        'İyi alışverişler',
     })
     $("#product_view").modal("hide")
- }
+  }
 
- $(".badge-primary").text(old_data.length)
+  $(".badge-primary").text(old_data.length)
 
- localStorage.setItem('products', JSON.stringify(old_data));
+  localStorage.setItem('products', JSON.stringify(old_data));
   showdata(old_data);
- 
-  
+
+
 }
 
-function deletecard(id)
-{
-  var data=JSON.parse(localStorage.getItem("products"));
-  data.splice(id,1)
-  localStorage.setItem('product', JSON.stringify(data));
-  var ls= localStorage.getItem("products");
-  console.log(ls)
+function deletecard(id) {
+
+  var new_data = id;
+  if (localStorage.getItem("products") == null) {
+    localStorage.setItem("products", '[]');
+
+  }
+
 }
 
 function opencard() {
@@ -218,10 +234,44 @@ $(document).ready(function () {
     })
     $(".add-to-card").click(function () {
       var id = $(this).data("id");
-     
-     
-    
+
+
+
       addtocard(id);
+    })
+
+    $(".quantity-plus").click(function () {
+      var id = $(this).siblings("input").data("id");
+      var a = $(this).siblings(".quantity").val();
+      var newprice = $(this).parent(".form-row").siblings(".price");
+      a++;
+      $(this).siblings(".quantity").val(a);
+      $.ajax({
+        url: "https://fakestoreapi.com/products/" + id
+      }).then(function (response) {
+        var prc = Number(response.price * a).toFixed(2);
+
+        newprice.text(prc + "$")
+
+        console.log(newprice);
+      })
+
+
+    })
+
+    $(".quantity-minus").click(function () {
+
+      var a = $(this).siblings(".quantity").val();
+      var ss = Number($(this).parent(".form-row").siblings(".price").data("price"))
+
+      if (a > 1) {
+        a--;
+
+      }
+      $(this).parent(".form-row").siblings(".price").text((ss * a).toFixed(2) + "$")
+
+      $(this).siblings(".quantity").val(a)
+
     })
   });
 
